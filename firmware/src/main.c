@@ -79,28 +79,28 @@ int main()
             case 'm': // View RAM
                 viewMemory((uint8_t*)SYS_RAM_ADDR, SYS_RAM_SIZE);
                 break;
-            case 't': // Test RAM
-				{ 
-                int8_t free = 0;
-                uint16_t *addr = &free;
+	    case 't': // Test RAM
+                {  
+                int8_t dummy_var = 0;
+                uint16_t *addr = (uint16_t *)&dummy_var;
                 last_usable_addr = 0;
                 while((uint16_t)addr < (SYS_RAM_ADDR+SYS_RAM_SIZE))
                 {
                     *(addr) = (uint16_t)addr;
-                    if(*(addr) != addr)
+                    if(*(addr) != (uint16_t)addr) // Cast 'addr' to integer to match dereferenced uint16_t
                     {
                         break;
                     }
                     last_usable_addr = (uint16_t)addr;
                     addr++;
                 }
-                snprintf(strbuf, sizeof(strbuf), "RAM: start = 0x%X, last usable = 0x%X, ramsize = %u\n\r",
+                snprintf((char *)strbuf, sizeof(strbuf), (const char *)"RAM: start = 0x%X, last usable = 0x%X, ramsize = %u\n\r",
                     (uint16_t)&start, last_usable_addr, last_usable_addr-(uint16_t)&start
                 );
                 uart_write(strbuf);
-				}
+                }
                 break;
-            default:
+           default:
                 putchar(uart_rx);
                 break;
         }
